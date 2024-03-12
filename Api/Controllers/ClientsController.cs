@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
+using Api.Interfaces;
 using Api.Models;
 
 namespace Api.Controllers
@@ -15,31 +16,33 @@ namespace Api.Controllers
     public class ClientsController : ControllerBase
     {
         private readonly OracleDbContext _context;
-
-        public ClientsController(OracleDbContext context)
+        private readonly IClientRepository _clientRepository;
+        public ClientsController(OracleDbContext context, IClientRepository clientRepository)
         {
             _context = context;
+            _clientRepository = clientRepository;
         }
 
         // GET: api/Clients
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Client>>> GetClient()
         {
-            return await _context.Client.ToListAsync();
+            var clientes = await _clientRepository.GetClients();
+            return clientes;
         }
 
         // GET: api/Clients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
-            var client = await _context.Client.FindAsync(id);
+            var client = await _clientRepository.GetClientById(id);
 
             if (client == null)
             {
                 return NotFound();
             }
 
-            return client;
+            return Ok(client);
         }
 
         // PUT: api/Clients/5
@@ -52,7 +55,7 @@ namespace Api.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(client).State = EntityState.Modified;
+            //_context.Entry(client).State = EntityState.Modified; Study how this works
 
             try
             {
