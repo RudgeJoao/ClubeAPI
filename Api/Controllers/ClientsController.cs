@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Api.Interfaces;
+using Api.Models;
+using Api.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Api.Data;
-using Api.Interfaces;
-using Api.Models;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Api.Controllers
 {
@@ -15,97 +11,38 @@ namespace Api.Controllers
     [ApiController]
     public class ClientsController : ControllerBase
     {
-        private readonly OracleDbContext _context;
         private readonly IClientRepository _clientRepository;
-        public ClientsController(OracleDbContext context, IClientRepository clientRepository)
+
+        public ClientsController(IClientRepository clientRepository)
         {
-            _context = context;
             _clientRepository = clientRepository;
         }
 
-        // GET: api/Clients
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Client>>> GetClient()
+        public async Task<ActionResult<List<Client>>> GetClients()
         {
-            var clientes = await _clientRepository.GetClients();
-            return clientes;
+            return await _clientRepository.GetClients();
         }
 
-        // GET: api/Clients/5
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{Id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
             var client = await _clientRepository.GetClientById(id);
 
-            if (client == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(client);
+            //return client != null ? Ok(client) : NotFound();
+            return client is not null ? Ok(client) : NotFound();
         }
 
-        // PUT: api/Clients/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutClient(int id, Client client)
+        [HttpPost]
+        public async Task<ActionResult<Client>> PostClient(Client client)
         {
-            if (id != client.Id)
+            if (client == null)
             {
                 return BadRequest();
             }
 
-            //_context.Entry(client).State = EntityState.Modified; Study how this works
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClientExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Clients
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Client>> PostClient(Client client)
-        {
-            _context.Client.Add(client);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetClient", new { id = client.Id }, client);
-        }
-
-        // DELETE: api/Clients/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClient(int id)
-        {
-            var client = await _context.Client.FindAsync(id);
-            if (client == null)
-            {
-                return NotFound();
-            }
-
-            _context.Client.Remove(client);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ClientExists(int id)
-        {
-            return _context.Client.Any(e => e.Id == id);
+            await _clientRepository.CreateClient(client);
+            return CreatedAtAction(nameof(client), client);
         }
     }
 }

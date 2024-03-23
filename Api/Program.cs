@@ -1,4 +1,6 @@
 using Api.Data;
+using Api.Interfaces;
+using Api.Repositories;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -22,6 +24,7 @@ builder.Services.AddDbContext<DbContext, OracleDbContext>(opt =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
