@@ -25,7 +25,7 @@ namespace Api.Controllers
             return await _clientRepository.GetClients();
         }
 
-        [HttpGet("GetById/{id}")]
+        [HttpGet("GetClient/{id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
             var client = await _clientRepository.GetClientById(id);
