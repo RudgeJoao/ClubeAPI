@@ -8,7 +8,7 @@ public interface IClientRepository
 
     Task<Client?> GetClientById(int id);
     Task CreateClient(Client client);
-    Task EditClient(int id, Client cliente);
+    Task EditClient(int id,Client cliente);
     Task DeleteClient(int id);
 
 }

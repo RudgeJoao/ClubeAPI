@@ -16,7 +16,8 @@ public class ClientRepository : IClientRepository
 
     public async Task<List<Client>> GetClients()
     {
-        return await _context.Client.ToListAsync();
+        return await _context.Client
+            .ToListAsync();
     }
 
     public async Task<Client?> GetClientById(int id)
@@ -32,11 +33,17 @@ public class ClientRepository : IClientRepository
 
     public async Task EditClient(int id, Client cliente)
     {
-        if (!ClientExists(id))
+        var existingClient = await _context.Client.FindAsync(id);
+        if (existingClient == null)
         {
             return;
         }
-        _context.Client.Update(cliente);
+        existingClient.Id = cliente.Id;
+        existingClient.Cpf = cliente.Cpf;
+        existingClient.Name = cliente.Name;
+        existingClient.PhoneNumber = cliente.PhoneNumber;
+        _context.Client.Update(existingClient);
+        //_context.Entry(cliente).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
 
@@ -49,10 +56,5 @@ public class ClientRepository : IClientRepository
         }
         _context.Client.Remove(client);
         await _context.SaveChangesAsync();
-    }
-
-    private bool ClientExists(int id)
-    {
-        return _context.Client.Any(client => client.Id == id);
     }
 }
