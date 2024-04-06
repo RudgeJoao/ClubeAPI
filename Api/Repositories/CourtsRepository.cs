@@ -33,9 +33,8 @@ namespace Api.Repositories
         {
             var existingCourt = await _context.Courts.FindAsync(id);
             if (existingCourt == null)
-            {
                 return;
-            }
+            
             existingCourt.Id = court.Id;
             existingCourt.Name = court.Name;
 

@@ -26,6 +26,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<ICourtRepository, CourtsRepository>();
+builder.Services.AddScoped<IRentRepository, RentRepository>();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();

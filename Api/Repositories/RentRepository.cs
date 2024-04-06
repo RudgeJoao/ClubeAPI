@@ -1,10 +1,11 @@
 using Api.Data;
+using Api.Interfaces;
 using Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Repositories;
 
-public class RentRepository
+public class RentRepository : IRentRepository
 {
     private readonly OracleDbContext _context;
 
@@ -15,18 +16,39 @@ public class RentRepository
 
     public async Task<List<Rent?>> GetRents()
     {
-        return await _context.Rents.ToListAsync();
+        var rents = await _context.Rents
+            .Include(rent => rent.Client)
+            .Include(rent => rent.Court)
+            .ToListAsync();
+        return rents;
     }
 
     public async Task<Rent?> GetRentById(int id)
     {
-        return await _context.Rents.FindAsync(id);
+        var rent = await _context.Rents
+            .Include(rent => rent.Client)
+            .Include(rent => rent.Court)
+            .FirstAsync(rent => rent.Id == id);
+        return rent;
     }
 
     public async Task CreateRent(Rent rent)
     {
         await _context.Rents.AddAsync(rent);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task EditRent(int id, Rent rent)
+    {
+        var existingRent = await _context.Rents.FindAsync(id);
+        if (existingRent == null)
+            return;
+
+        existingRent.Id = rent.Id;
+        existingRent.Court = rent.Court;
+        existingRent.Client = rent.Client;
+        existingRent.Start = rent.Start;
+        existingRent.End = rent.End;
     }
 
     public async Task DeleteRent(int id)
@@ -37,6 +59,6 @@ public class RentRepository
             return;
         }
         _context.Rents.Remove(rent);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\RentController.cs" />
+    <Compile Remove="Controllers\a.cs" />
   </ItemGroup>
 
 </Project>

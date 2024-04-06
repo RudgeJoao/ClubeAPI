@@ -10,6 +10,6 @@ namespace Api.Data
 
         public DbSet<Client> Client { get; set; }
         public DbSet<Court> Courts { get; set; }
-        public DbSet<Rent?> Rents { get; set; }
+        public DbSet<Rent> Rents { get; set; }
     }
 }
