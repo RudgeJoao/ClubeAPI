@@ -1,10 +1,6 @@
 ﻿using Api.Interfaces;
 using Api.Models;
-using Api.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace Api.Controllers
 {
